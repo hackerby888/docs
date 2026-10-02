@@ -19,6 +19,8 @@ Contracts can refill their execution fee reserves in the following ways:
 The execution fee system follows a key principle: **"The Contract Initiating Execution Pays"**. When a user initiates a transaction, the user's destination contract must have a positive executionFeeReserve. When a contract initiates an operation (including any callbacks it triggers), that contract must have positive executionFeeReserve.
 
 The execution time of each contract is measured and fees proportional to that execution time are deducted from the reserve.
+Next to executing a procedure, every tick that has a change of the contract's state (via `state.mut()`) costs fees due to the need to recompute the digest of the state.
+Depending on the size of the state, the digest computation may be significantly more expensive than the run-time of the procedures.
 If the fee reserve of a contract goes to or below 0, the contract becomes dormant.
 This means, it will mostly be unusable until the reserve is refilled (for exceptions see next section).
 
@@ -45,6 +47,8 @@ After all transactions are sent, the received execution fee values are sorted in
 ### For Contract Developers
 
 1. **Plan for sustainability**: Charge invocation rewards for running user procedures.
+   Check inputs for errors before changing state with `state.mut()`, because it triggers recomputing the state digest. Use `state.get()` when you only read.
+   Select a reasonable size for arrays and other containers, because costs for digest computation increase with state size.
 2. **Burn collected invocation rewards**: Regularly burn QUs to replenish the execution fee reserve.
 3. **Monitor reserve**: Implement a function to expose current reserve level.
 4. **Graceful degradation**: Consider what happens when reserve runs low.
