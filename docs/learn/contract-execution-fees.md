@@ -47,12 +47,12 @@ After all transactions are sent, the received execution fee values are sorted in
 ### For Contract Developers
 
 1. **Plan for sustainability**: Charge invocation rewards for running user procedures.
-   Check inputs for errors before changing state with `state.mut()`, because it triggers recomputing the state digest. Use `state.get()` when you only read.
-   Select a reasonable size for arrays and other containers, because costs for digest computation increase with state size.
-2. **Burn collected invocation rewards**: Regularly burn QUs to replenish the execution fee reserve.
-3. **Monitor reserve**: Implement a function to expose current reserve level.
-4. **Graceful degradation**: Consider what happens when reserve runs low.
-5. **Handle inter-contract call errors**: After calling procedures of another contract, verify that the call succeeded. Handle errors gracefully (e.g., skip operations, use fallback logic). You can also proactively verify the called contract has positive fee reserve using the query function provided in QPI before calling.
+2. **Validate before writing state**: Check inputs before calling `state.mut()`, it triggers the state digest recomputation. Use `state.get()` for reads.
+3. **Keep state small**: Digest cost grows with state size, so size arrays and containers reasonably.
+4. **Burn collected invocation rewards**: Regularly burn QUs to replenish the execution fee reserve.
+5. **Monitor reserve**: Implement a function to expose current reserve level.
+6. **Graceful degradation**: Consider what happens when reserve runs low.
+7. **Handle inter-contract call errors**: After calling procedures of another contract, verify that the call succeeded. Handle errors gracefully (e.g., skip operations, use fallback logic). You can also proactively verify the called contract has positive fee reserve using the query function provided in QPI before calling.
 
 ### For Contract Users
 
